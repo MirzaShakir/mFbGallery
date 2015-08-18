@@ -1,7 +1,7 @@
 mFbGallery
 ====================
 
-Simple PHP program for Media gallery using Facebook integration. **[Live Demo]( coming soon.. )**
+Simple PHP program for Media gallery using Facebook integration.
 
 **Features:**
 

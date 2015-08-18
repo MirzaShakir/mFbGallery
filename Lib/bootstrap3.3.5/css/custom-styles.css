@@ -429,4 +429,8 @@ font-size: 19px;
 }
 }
 
-
+img.js-img-thumbnail-preview {
+	display: block;
+	width: 176px;
+	height: 144px;
+}

@@ -84,9 +84,9 @@
                                 <div class="panel-footer back-footer-<?php echo $arrstrColors[ $intColorId ] ?>">
                                     <a class="thumbnail" href="user_album.php?album[id]=<?php echo $arrmixAlbum['id'] ?>">
                                         <img class="js-img-thumbnail-preview img-responsive" alt="No preview" src="<?php echo $arrmixAlbum['cover'] ?>">
-                                        <?php echo $arrmixAlbum['name'] ?>
-                                        <span class="right text-right""> (<?php echo $arrmixAlbum['count'] ?>) </span>
-                                    </a>
+	                                </a>
+	                                <span class="text-right""><?php echo substr( $arrmixAlbum['name'], 0, 10 ); ?> (<?php echo $arrmixAlbum['count'] ?>) </span>
+	                                <a data-album-id="<?php echo $arrmixAlbum['id'] ?>" class="js-btn-download-album btn btn-default btn-sm right navbar-default back-footer-<?php echo $arrstrColors[ $intColorId ] ?>" href="#" data-url="<?php echo $arrmixAlbum['cover'] ?>"><i class="fa fa-download fa-2x"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -116,5 +116,8 @@
 </div>
 <!-- /. WRAPPER  -->
 <?php require_once('App/Includes/footer_start.php'); ?>
+<script type="text/javascript">
+	mfb.fbFunctions.initGalleryActions( $('#page-wrapper') );
+</script>
 </body>
 </html>

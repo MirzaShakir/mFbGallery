@@ -7,3 +7,5 @@
 <script src="Lib/bootstrap3.3.5/js/jquery.metisMenu.js"></script>
 <!-- Custom Js -->
 <script src="Lib/bootstrap3.3.5/js/custom-scripts.js"></script>
+<!-- internal Js -->
+<script src="Lib/js/gallery_actions.js"></script>

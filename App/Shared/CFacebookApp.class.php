@@ -141,7 +141,7 @@
 
 		public function getLoggedInUserDetails() {
 			try{
-				$this->m_objResponse = $this->fetchResponse( '/me?fields=id,name,gender,link,birthday,location' );
+				$this->m_objResponse = $this->fetchResponse( '/me?fields=id,name,picture.type(large)' );
 				$this->m_objUser = $this->m_objResponse->getGraphUser();
 			} catch(  Facebook\Exceptions\FacebookResponseException $objException) {
 				echo 'The graph returned with error: ' . $objException->getMessage();

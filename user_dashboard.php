@@ -37,7 +37,7 @@
 	</a>
 	<ul class="dropdown-menu dropdown-user">
 		<li><a href="#"><i class="fa fa-user fa-fw"></i> <?php echo $objFb->m_objUser->getName(); ?></a></li>
-		<!--<li><i class="fa fa-gear fa-fw"></i> <?php /*echo $objFb->m_objUser->getLocation(); */?> </li>-->
+		<!--<li><i class="fa fa-gear fa-fw"></i> <?php /*echo $objFb->m_objUser->getProfilePicUrl(); */?> </li>-->
 		<li class="divider"></li>
 		<li><a href="logout.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
 	</ul>

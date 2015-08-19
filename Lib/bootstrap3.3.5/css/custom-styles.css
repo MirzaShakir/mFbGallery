@@ -28,7 +28,7 @@ body {
     margin:10px 20px 10px 0px;
     background-color:transparent;
     padding:10px;
-    min-height:1200px;
+    min-height:800px;
 }
 
 .text-center {
@@ -405,7 +405,7 @@ line-height: 1.428571429;
      #page-wrapper{
                margin: 0 0 0 260px;
         padding: 15px 30px;
-        min-height: 1200px;
+        min-height: 800px;
 		
     }
 	
@@ -431,6 +431,12 @@ font-size: 19px;
 
 img.js-img-thumbnail-preview {
 	display: block;
-	width: 176px;
+	width: 200px;
 	height: 144px;
+}
+
+.bg-img-medium {
+	background-image: url('../img/loader.gif');
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
 }

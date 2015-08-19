@@ -1,81 +1,110 @@
 <?php
-require_once( 'App/ZipArchive/pclzip.lib.php' );
+	require_once( 'App/ZipArchive/pclzip.lib.php' );
 
-class CZipArchive
-{
-    protected $m_arrmixValidFiles;
+	class CZipArchive {
+		protected $m_arrmixValidFiles;
 
-    function __construct() {
-        return true;
-    }
+		function __construct() {
+			return true;
+		}
 
-    public function makeZipFile( $arrmixFiles, $strDestination, $boolIsOverwrite = false ) {
+		public function makeZipFile( $arrmixFiles, $strDestination, $boolIsOverwrite = false ) {
 
-        //Check if file is exist already!!!
-        if( true == file_exists( $strDestination ) && false == $boolIsOverwrite ) {
-            echo( 'already exist' );
-            return false;
-        }
+			try {
+				//Check if file is exist already!!!
+				if( true == file_exists( $strDestination ) && false == $boolIsOverwrite ) {
+					echo( 'already exist' );
 
-        $this->m_arrmixValidFiles = array();
+					return false;
+				}
 
-        if( true == is_array( $arrmixFiles ) ) {
-            foreach( $arrmixFiles as $strOneFile ) {
-                if( true == $strOneFile ) {
-                    $this->m_arrmixValidFiles[] = $strOneFile;
-                }
-            }
-        }
+				$this->m_arrmixValidFiles = array();
 
-        if( 0 >= count( $this->m_arrmixValidFiles ) ) {
-            echo( 'no files found' );
-            return false;
-        }
+				/*if( true == is_array( $arrmixFiles ) ) {
+					foreach( $arrmixFiles as $strOneFile ) {
+						if( true == $strOneFile ) {
+							$this->m_arrmixValidFiles[] = $strOneFile;
+						}
+					}
+				}*/
 
-        $objZip = new PclZip( $strDestination );
-        /*if( true !== $objZip->create( $strDestination, $boolIsOverwrite ? ZipArchive::OVERWRITE : ZipArchive::CREATE ) ) {
-            echo( 'Zip cannot created' );
-            return false;
-        }*/
+				$this->m_arrmixValidFiles = $arrmixFiles;
 
-        foreach( $this->m_arrmixValidFiles as $strOneFile ) {
-            $objZip->add( $strOneFile );
-        }
+				if( 0 >= count( $this->m_arrmixValidFiles ) ) {
+					echo( 'no files found' );
 
-        return file_exists( $strDestination );
-    }
-}
+					return false;
+				}
 
+				$objZip = new PclZip( $strDestination );
+				/*if( true !== $objZip->create( $strDestination, $boolIsOverwrite ? ZipArchive::OVERWRITE : ZipArchive::CREATE ) ) {
+					echo( 'Zip cannot created' );
+					return false;
+				}*/
 
-/*try
-{
-if ($objZip->open($strFile, ZipArchive::CREATE | ZipArchive::OVERWRITE))
-{
-exit('Sorry!! Zip cannot be created.');
-}
+				/*foreach( $this->m_arrmixValidFiles as $strOneFile ) {*/
+				$strFile = file_get_contents( $this->m_arrmixValidFiles['url'] );
+				$arrSize = getimagesize( $this->m_arrmixValidFiles['url'] );
 
-$objZip->addFile($strFile, $strFileName);
+				$objZip->create( array(
+				                      array(
+					                      PCLZIP_ATT_FILE_NAME    => $this->m_arrmixValidFiles['name'] . '.' . image_type_to_extension( $arrSize[2] ),
+					                      PCLZIP_ATT_FILE_CONTENT => $strFile,
+				                      )
+				                 ) );
+				$objZip->add( $strFile );
 
-$objZip->close();
-} catch (Exception $objException ) {
-    echo '<pre>';
-    print_r($objZip);
-    print_r($objException);
-    echo '<pre>';
-    exit;
-}
+				/*}*/
 
-header("Pragma: public");
-header("Expires: 0");
-header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-header("Cache-Control: private", false);
-header("Content-Type: application/zip");
-header("Content-Disposition: attachment; filename=" . basename($$strFileName) . ";");
-header("Content-Transfer-Encoding: binary");
-header("Content-Length: " . filesize($strFileName));
-readfile($strFileName);
+				return file_exists( $strDestination );
+			} catch( Exception $objException ) {
+				die( $objException->getMessage() );
+			}
+		}
 
-//deletes file when its done...
-unlink($strFileName);
-exit;*/
-?>
+		public function makeZipFileFromAlbum( $arrmixFiles, $strDestination, $boolIsOverwrite = false ) {
+
+			try {
+				//Check if file is exist already!!!
+				if( true == file_exists( $strDestination ) && false == $boolIsOverwrite ) {
+					echo( 'file already exist. ' );
+
+					return false;
+				}
+
+				if( 0 >= count( $arrmixFiles ) ) {
+					echo( 'no files found' );
+					return false;
+				}
+
+				$objZip = new PclZip( $strDestination );
+
+				if( true == is_array( $arrmixFiles ) ) {
+					foreach( $arrmixFiles as $arrFile ) {
+						$objImage = file_get_contents( $arrFile['image'] );
+						$arrSize  = getimagesize( $arrFile['image'] );
+						$strName  = substr( $arrFile['name'], 0, 15 );
+
+						$objArray[] = array(
+							PCLZIP_ATT_FILE_NAME    => $strName . '.' . image_type_to_extension( $arrSize[2] ),
+							PCLZIP_ATT_FILE_CONTENT => $objImage,
+						);
+
+						/*$objZip->create( array(
+						                      array(
+							                      PCLZIP_ATT_FILE_NAME    => $strName . '.' . image_type_to_extension( $arrSize[2] ),
+							                      PCLZIP_ATT_FILE_CONTENT => $objImage,
+						                      )
+						                 ) );*/
+						//$objZip->add( $objImage );
+						$this->m_arrmixValidFiles[] = $objImage;
+					}
+					$objZip->create( $objArray );
+					$objZip->add( $this->m_arrmixValidFiles );
+				}
+				return file_exists( $strDestination );
+			} catch( Exception $objException ) {
+				die( $objException->getMessage() );
+			}
+		}
+	}

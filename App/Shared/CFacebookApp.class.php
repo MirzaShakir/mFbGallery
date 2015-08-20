@@ -40,8 +40,8 @@
 			return $this->get( $strRequestParams, getSession( 'fb_token' ) );
 		}
 
-		public function postResponse( $strRequestParams ) {
-			return $this->post( $strRequestParams, getSession( 'fb_token' ) );
+		public function postResponse( $strRequest, $arrParams = array() ) {
+			return $this->post( $strRequest, $arrParams,  getSession( 'fb_token' ) );
 		}
 
 		public function getPhotoAlbums() {
@@ -152,10 +152,21 @@
 			}
 		}
 
-		public function removePermissionsTaken() {
+		public function getPhotosPermission() {
 			try{
-				$this->m_objResponse = $this->postResponse( 'DELETE /{user-id}/permissions' );
-				$this->m_objUser = $this->m_objResponse->getGraphUser();
+				$this->m_objResponse = $this->fetchResponse( '/me/permissions/user_photos' );
+			} catch(  Facebook\Exceptions\FacebookResponseException $objException) {
+				echo 'The graph returned with error: ' . $objException->getMessage();
+				exit;
+			} catch( Facebook\Exceptions\FacebookSDKException $objException ) {
+				echo 'The SDK returned with error: ' . $objException->getMessage();
+				exit;
+			}
+		}
+
+		public function revokePermissionsTaken() {
+			try{
+				$this->m_objResponse = $this->postResponse( 'DELETE /me/permissions' );
 			} catch(  Facebook\Exceptions\FacebookResponseException $objException) {
 				echo 'The graph returned with error: ' . $objException->getMessage();
 				exit;

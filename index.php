@@ -47,8 +47,9 @@
                 <h1 class="page-header">
                     Fecebook gallery for photos.
                 </h1>
-
-                <a href="<?php echo $objFb->getRedirectUrl() ?>">Login to Facebook</a>
+	            <a target="_self" href="<?php echo $objFb->getRedirectUrl() ?>">
+		            <button class="btn btn-default btn-sm">Login to Facebook</button>
+		        </a>
             </div>
         </div>
         <!-- /. ROW  -->

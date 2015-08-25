@@ -20,7 +20,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<?php require_once( 'App/Includes/header_start.php' ); ?>
-	<title>mFbGallery : Home</title>
+	<title>mFbGallery : <?php echo $objFb->m_strAlbumName; ?></title>
 	<?php require_once( 'App/Includes/header_end.php' ); ?>
 </head>
 <body>
@@ -63,7 +63,7 @@
 				<li>
 					<a class="active-menu" href="user_photos.php"><i class="fa fa-desktop"></i> mPhotos</a>
 				</li>
-				<li>
+				<li class="hide">
 					<a href="user_friends.php"><i class="fa fa-fw fa-file"></i> mFriends</a>
 				</li>
 			</ul>
@@ -94,11 +94,11 @@
 							<div class="panel panel-primary text-center no-boder bg-color-<?php echo $arrstrColors[$intColorId] ?>">
 								<div class="panel-footer back-footer-<?php echo $arrstrColors[$intColorId] ?>">
 									<div class="panel-body">
-										<img class="js-img-thumbnail-preview img-responsive" alt="No preview" src="<?php echo $arrmixAlbum['image'] ?>">
+										<img class="js-img-thumbnail-preview img-responsive" alt="No preview" title="<?php echo $arrmixAlbum['name'] ?>" src="<?php echo $arrmixAlbum['image'] ?>">
 									</div>
 									<div class="panel-footer back-footer-<?php echo $arrstrColors[$intColorId] ?>">
-										<button class="btn btn-default btn-sm js-btn-download-one" data-url="<?php echo $arrmixAlbum['image'] ?>" data-name="<?php echo $arrmixAlbum['name'] ?>"><i class="fa fa-download fa-1x"></i></button>
-										<button class="btn btn-default btn-sm">
+										<button class="btn btn-default btn-sm js-btn-download-one" data-image="<?php echo $arrmixAlbum['image'] ?>" data-name="<?php echo $arrmixAlbum['name'] ?>"><i class="fa fa-download fa-1x"></i></button>
+										<button class="btn btn-default btn-sm js-btn-select-deselect" data-is-checked="true" data-image="<?php echo $arrmixAlbum['image'] ?>" data-name="<?php echo $arrmixAlbum['name'] ?>">
 											<i class="fa fa-check"></i>
 										</button>
 									</div>
@@ -112,9 +112,12 @@
 					}
 				?>
 			</div>
+			<div>
+				<button class="btn btn-default js-download-selected-photos hide"><i class="fa fa-download fa-2x"></i> Download selected photos</button>
+			</div>
 
 			<!-- /. ROW  -->
-			<footer><p>All right reserved. Template by: <a href="http://webthemez.com">WebThemez</a></p></footer>
+			<footer><p>Developed by: <a target="_blank" href="http://smarterer.com/baigmirzashakir"> MirzaShakir Baig</a></p></footer>
 		</div>
 		<!-- /. PAGE INNER  -->
 	</div>

@@ -4,6 +4,9 @@
 
 	mFb.prototype = {
 		patterns: {
+			getCommonBaseUrl: function () {
+				return 'http://localhost/GitHub/mFbGallery/';
+			},
 			showLoadingImage: function ( t ) {
 				if( arguments.length ) {
 					if( !$.isPlainObject( arguments[0] ) ) var t = {
@@ -66,7 +69,7 @@
 				}
 			}
 		}
-	}, window.mfb = new mFb, window.showLoadingImage = mfb.patterns.showLoadingImage, window.removeLoadingImage = mfb.patterns.removeLoadingImage, window.ajaxRequest = mfb.patterns.ajaxRequest
+	}, window.mfb = new mFb, window.getCommonBaseUrl = mfb.patterns.getCommonBaseUrl, window.showLoadingImage = mfb.patterns.showLoadingImage, window.removeLoadingImage = mfb.patterns.removeLoadingImage, window.ajaxRequest = mfb.patterns.ajaxRequest
 }( window, jQuery );
 
 mfb.fnCookies = (function ( $ ) {
@@ -109,7 +112,7 @@ mfb.fbFunctions = (function ( $ ) {
 		referenceDiv.find( 'div.alert' ).remove();
 		$( '<div class=\'alert alert-' + status + '\'><i></i>' + message + '</div>' ).prependTo( referenceDiv ).fadeIn().animate( {
 				opacity: 1.0
-			}, 7000 ).fadeOut( 500, function () {
+			}, 9999 ).fadeOut( 500, function () {
 				$( this ).remove();
 			} );
 	}
@@ -117,45 +120,128 @@ mfb.fbFunctions = (function ( $ ) {
 	function initGalleryActions( $objMainDiv ) {
 		var $thisRef = this;
 
-		$objMainDiv.on( 'click', '.js-btn-download-one', function () {
-			var $this = $( this ), strPhotoUrl = $this.data( 'url' ), strPhotoName = $this.data( 'name' );
+		$objMainDiv.on( 'click', '.js-btn-select-deselect', function() {
+			var $this = $(this);
+			if( 'true' == $this.data('is-checked') ) {
+				$this.removeClass( 'is-checked' ).data( 'is-checked', 'false' );
+			} else {
+				$this.addClass( 'is-checked' ).data( 'is-checked', 'true' );
+			}
+
+			$objMainDiv.find( '.js-download-selected-photos, .js-download-selected-albums' ).addClass( 'hide' );
+			if( 0 < $objMainDiv.find( '.js-btn-select-deselect.is-checked' ).length ) {
+				$objMainDiv.find( '.js-download-selected-photos, .js-download-selected-albums' ).removeClass( 'hide' );
+			}
+		});
+
+		$objMainDiv.on( 'click', '.js-download-selected-photos', function () {
+			var $this = $( this ), arrPhotos = [];
+
+			$objMainDiv.find( '.js-btn-select-deselect.is-checked' ).each( function() {
+				arrPhotos.push({ 'image' : $(this).data('image'), 'name' : $(this).data('name') });
+			});
 
 			mfb.patterns.ajaxRequest( {
 				strElementSelector: $objMainDiv,
-				url: 'http://localhost/GitHub/mFbGallery/download_photo.php',
+				url: mfb.patterns.getCommonBaseUrl() + 'download_photo.php',
+				dataType: 'json',
 				data: {
-					'photo[url]': strPhotoUrl,
+					'photos': arrPhotos
+				},
+				success: function ( result ) {
+					mfb.patterns.removeLoadingImage( {
+						strElementSelector: $objMainDiv
+					} );
+					if( 'success' == result.type ) {
+						$thisRef.showAlertMessage( result.type, $objMainDiv, result.message );
+						window.location = result.url;
+					} else {
+						$thisRef.showAlertMessage( result.type, $objMainDiv, result.message );
+					}
+				}
+			} );
+		} );
+
+
+		$objMainDiv.on( 'click', '.js-download-selected-albums', function () {
+			var $this = $( this ), arrAlbums = [];
+
+			$objMainDiv.find( '.js-btn-select-deselect.is-checked' ).each( function() {
+				arrAlbums.push({ 'id' : $(this).data('album-id'), 'name' : $(this).data('name') });
+			});
+
+			mfb.patterns.ajaxRequest( {
+				strElementSelector: $objMainDiv,
+				url: mfb.patterns.getCommonBaseUrl() + 'download_album.php',
+				dataType: 'json',
+				data: {
+					'albums': arrAlbums
+				},
+				success: function ( result ) {
+					mfb.patterns.removeLoadingImage( {
+						strElementSelector: $objMainDiv
+					} );
+					if( 'success' == result.type ) {
+						$thisRef.showAlertMessage( result.type, $objMainDiv, result.message );
+						window.location = result.url;
+					} else {
+						$thisRef.showAlertMessage( result.type, $objMainDiv, result.message );
+					}
+				}
+			} );
+		} );
+
+		$objMainDiv.on( 'click', '.js-btn-download-one', function () {
+			var $this = $( this ), strPhotoUrl = $this.data( 'image' ), strPhotoName = $this.data( 'name' );
+
+			mfb.patterns.ajaxRequest( {
+				strElementSelector: $objMainDiv,
+				url: mfb.patterns.getCommonBaseUrl() + 'download_photo.php',
+				dataType: 'json',
+				data: {
+					'photo[image]': strPhotoUrl,
 					'photo[name]': strPhotoName
 				},
 				success: function ( result ) {
 					mfb.patterns.removeLoadingImage( {
 						strElementSelector: $objMainDiv
 					} );
-					$thisRef.showAlertMessage( 'success', $objMainDiv, 'Photo downloaded successfully.' );
-					window.location = result;
+
+					if( 'success' == result.type ) {
+						$thisRef.showAlertMessage( result.type, $objMainDiv, result.message );
+						window.location = result.url;
+					} else {
+						$thisRef.showAlertMessage( result.type, $objMainDiv, result.message );
+					}
 				}
 			} );
 		} );
 
 		$objMainDiv.on( 'click', '.js-btn-download-album', function () {
-			var $this = $( this ), intAlbumId = $this.data( 'album-id' );
+			var $this = $( this ), intAlbumId = $this.data( 'album-id' ), strAlbumName = $this.data( 'name' );
 
 			mfb.patterns.ajaxRequest( {
 				strElementSelector: $objMainDiv,
-				url: 'http://localhost/GitHub/mFbGallery/download_album.php',
+				url: mfb.patterns.getCommonBaseUrl() + 'download_album.php',
+				dataType: 'json',
 				data: {
-					'album[id]': intAlbumId
+					'album[id]': intAlbumId,
+					'album[name]': strAlbumName
 				},
 				success: function ( result ) {
 					mfb.patterns.removeLoadingImage( {
 						strElementSelector: $objMainDiv
 					} );
-					$thisRef.showAlertMessage( 'success', $objMainDiv, 'Album downloaded successfully.' );
-					window.location = result;
+
+					if( 'success' == result.type ) {
+						$thisRef.showAlertMessage( result.type, $objMainDiv, result.message );
+						window.location = result.url;
+					} else {
+						$thisRef.showAlertMessage( result.type, $objMainDiv, result.message );
+					}
 				}
 			} );
 		} );
-
 	}
 
 	return {

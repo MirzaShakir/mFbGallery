@@ -440,3 +440,33 @@ img.js-img-thumbnail-preview {
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
 }
+
+a.noref {
+	color: #ffffff;
+	float: left;
+}
+
+.is-checked  {
+	background: #5cb85c !important;
+}
+
+.loading-overlay {
+	position: absolute;
+	background-color: #E5EBF2;
+	opacity: 0.6;
+	z-index: 1;
+}
+
+.margin5-bottom {
+	margin-bottom: 5px !important;
+}
+
+.trunc {
+	display: block;
+	overflow: hidden;
+	white-space: nowrap;
+	position: relative;
+	text-overflow: ellipsis;
+	width: auto;
+}
+

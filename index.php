@@ -7,7 +7,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <?php require_once('App/Includes/header_start.php'); ?>
-    <title>mFbGallery : Home</title>
+    <title>mFbGallery : Login</title>
     <?php require_once('App/Includes/header_end.php'); ?>
 </head>
 <body>
@@ -53,9 +53,7 @@
             </div>
         </div>
         <!-- /. ROW  -->
-	    <footer>
-		    <!-- <p>All right reserved. Template by: <a href="http://webthemez.com">WebThemez</a></p> -->
-	    </footer>
+	    <footer><p>Developed by: <a target="_blank" href="http://smarterer.com/baigmirzashakir"> MirzaShakir Baig</a></p></footer>
     </div>
     <!-- /. PAGE INNER  -->
 </div>

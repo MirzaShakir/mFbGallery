@@ -14,7 +14,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <?php require_once('App/Includes/header_start.php'); ?>
-    <title>mFbGallery : Home</title>
+    <title>mFbGallery : Albums</title>
     <?php require_once('App/Includes/header_end.php'); ?>
 </head>
 <body>
@@ -57,7 +57,7 @@
             <li>
                 <a class="active-menu" href="user_photos.php"><i class="fa fa-desktop"></i> mPhotos</a>
             </li>
-            <li>
+            <li class="hide">
                 <a href="user_friends.php"><i class="fa fa-fw fa-file"></i> mFriends</a>
             </li>
         </ul>
@@ -82,11 +82,16 @@
                         <div class="col-md-3 col-sm-12 col-xs-12">
                             <div class="panel panel-primary text-center no-boder bg-color-<?php echo $arrstrColors[ $intColorId ] ?>">
                                 <div class="panel-footer back-footer-<?php echo $arrstrColors[ $intColorId ] ?>">
-                                    <a class="thumbnail" href="user_album.php?album[id]=<?php echo $arrmixAlbum['id'] ?>">
+                                    <a class="thumbnail margin5-bottom" href="user_album.php?album[id]=<?php echo $arrmixAlbum['id'] ?>">
                                         <img class="js-img-thumbnail-preview img-responsive" alt="No preview" src="<?php echo $arrmixAlbum['cover'] ?>">
 	                                </a>
-	                                <span class="text-right""><?php echo substr( $arrmixAlbum['name'], 0, 10 ); ?> (<?php echo $arrmixAlbum['count'] ?>) </span>
-	                                <a data-album-id="<?php echo $arrmixAlbum['id'] ?>" class="js-btn-download-album btn btn-default btn-sm right navbar-default back-footer-<?php echo $arrstrColors[ $intColorId ] ?>" href="#" data-url="<?php echo $arrmixAlbum['cover'] ?>"><i class="fa fa-download fa-2x"></i></a>
+	                                <a class="noref" href="user_album.php?album[id]=<?php echo $arrmixAlbum['id'] ?>"><span class="trunc"><?php echo substr( $arrmixAlbum['name'], 0, 12 ); ?> (<?php echo $arrmixAlbum['count'] ?>) </span></a>
+	                                <div class="clearfix"></div>
+	                                <button data-album-id="<?php echo $arrmixAlbum['id'] ?>" data-name="<?php echo $arrmixAlbum['name'] ?>" class="btn btn-default btn-sm js-btn-download-album"><i class="fa fa-download fa-1x"></i></button>
+	                                <!--<a  class=" btn btn-default btn-sm right navbar-default back-footer-<?php /*echo $arrstrColors[ $intColorId ] */?>" data-url="<?php /*echo $arrmixAlbum['cover'] */?>"><i class="fa fa-download fa-2x"></i></a>-->
+	                                <button class="btn btn-default btn-sm js-btn-select-deselect" data-is-checked="true" data-album-id="<?php echo $arrmixAlbum['id'] ?>" data-name="<?php echo $arrmixAlbum['name'] ?>">
+		                                <i class="fa fa-check"></i>
+	                                </button>
                                 </div>
                             </div>
                         </div>
@@ -94,9 +99,12 @@
                 }
             ?>
         </div>
+	    <div>
+		    <button class="btn btn-default js-download-selected-albums hide"><i class="fa fa-download fa-2x"></i> Download selected albums</button>
+	    </div>
 
         <!-- /. ROW  -->
-        <footer><p>All right reserved. Template by: <a href="http://webthemez.com">WebThemez</a></p></footer>
+        <footer><p>Developed by: <a target="_blank" href="http://smarterer.com/baigmirzashakir"> MirzaShakir Baig</a></p></footer>
     </div>
     <!-- /. PAGE INNER  -->
 </div>

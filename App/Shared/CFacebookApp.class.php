@@ -28,6 +28,7 @@
 		protected $m_strAccessToken;
 
 		function __construct() {
+			echo "construct running";
 			$arrmixConfig = [
 				'app_id'                => self::APP_ID,
 				'app_secret'            => self::APP_SECRET,
@@ -47,15 +48,6 @@
 		public function getPhotoAlbums() {
 			$this->getLoggedInUserDetails();
 			try{
-
-				/*$requestFriends = $objFb->request('GET', '/me/friends?fields=id,name', array(), getSession( 'fb_token' ));
-				$arrmixBatchFriends = ['user-friends' => $requestFriends,];
-				$responsesFriends = $objFb->sendBatchRequest($arrmixBatchFriends, getSession( 'fb_token' ));
-				foreach ($responsesFriends as $key => $response) {
-					echo "Response: " . var_dump($response) . "</p>\n\n";
-				}
-				exit;*/
-				//$objResponse= $objFb->get( '/me/albums', getSession( 'fb_token' ) );
 				$this->m_arrmixAlbums = NULL;
 				do {
 					$strAfter = '';
@@ -65,7 +57,6 @@
 					}
 
 					$this->m_objResponse = $this->fetchResponse( 'me/albums?fields=name,id,count,cover_photo{picture}&limit=5&after=' . $strAfter );
-					//$this->m_objResponse = $this->fetchResponse( '/'. $this->m_objUser->getId()  .'/albums?limit=5&after=' . $strAfter );
 
 					$objAlbums = ( array ) $this->m_objResponse->getDecodedBody() [ 'data' ];
 
@@ -80,9 +71,11 @@
 					}
 				} while( true == array_key_exists( 'paging' , $this->m_objResponse->getDecodedBody() ) && true == array_key_exists( 'next' , $this->m_objResponse->getDecodedBody() ['paging'] ) );
 			} catch(  Facebook\Exceptions\FacebookResponseException $objException) {
+				display( $objException );
 				echo 'The graph returned with error: ' . $objException->getMessage();
 				exit;
 			} catch( Facebook\Exceptions\FacebookSDKException $objException ) {
+				display( $objException );
 				echo 'The SDK returned with error: ' . $objException->getMessage();
 				exit;
 			}
@@ -123,17 +116,63 @@
 						if( true == array_key_exists( 'album', $objAlbum ) ) {
 							$this->m_strAlbumName =  $objAlbum['album']['name'];
 						}
-
-						/*$this->m_arrmixAlbums[  $objAlbum['id'] ] =  array(
-							'id' => $objAlbum['id'],
-							'name' => $objAlbum['name']
-						);*/
 					}
 				} while( true == array_key_exists( 'paging' , $this->m_objResponse->getDecodedBody() ) && true == array_key_exists( 'next' , $this->m_objResponse->getDecodedBody() ['paging'] ) );
 			} catch(  Facebook\Exceptions\FacebookResponseException $objException) {
+				display( $objException );
 				echo 'The graph returned with error: ' . $objException->getMessage();
 				exit;
 			} catch( Facebook\Exceptions\FacebookSDKException $objException ) {
+				display( $objException );
+				echo 'The SDK returned with error: ' . $objException->getMessage();
+				exit;
+			}
+		}
+
+		public function getPhotosFromAlbums( $arrAlbums ) {
+
+			if( false == valArr( $arrAlbums ) ) {
+				die( 'Invalid photo id passed.' );
+			}
+
+			$this->getLoggedInUserDetails();
+			try {
+				$this->m_arrmixPhotos = NULL;
+				foreach( $arrAlbums as $arrAlbum ) {
+					if( true == array_key_exists( 'id', $arrAlbum ) && false == is_null( $arrAlbum['id'] ) ) {
+						$intAlbumId     = $arrAlbum[ 'id' ];
+						do {
+							$strAfter = '';
+
+							if( true == isset( $this->m_objResponse ) && true == array_key_exists( 'paging' , $this->m_objResponse->getDecodedBody() ) && true == array_key_exists( 'next' , $this->m_objResponse->getDecodedBody() ['paging'] ) ) {
+								$strAfter = $this->m_objResponse->getDecodedBody()['paging']['cursors']['after'];
+							}
+
+							$this->m_objResponse = $this->fetchResponse(  $intAlbumId . '/photos?fields=name,id,images,album&limit=5&after=' . $strAfter );
+
+							$objAlbums = ( array ) $this->m_objResponse->getDecodedBody() [ 'data' ];
+
+							foreach( $objAlbums as $objAlbum ) {
+
+								$this->m_arrmixPhotos[  $objAlbum['id'] ]['id'] =  $objAlbum['id'];
+
+								if( true == array_key_exists( 'name', $objAlbum ) ) {
+									$this->m_arrmixPhotos[ $objAlbum['id'] ]['name'] =  $objAlbum['name'];
+								}
+
+								if( true == array_key_exists( 'images', $objAlbum ) ) {
+									$this->m_arrmixPhotos[  $objAlbum['id'] ]['image'] =  $objAlbum['images'][0]['source'];
+								}
+							}
+						} while( true == array_key_exists( 'paging' , $this->m_objResponse->getDecodedBody() ) && true == array_key_exists( 'next' , $this->m_objResponse->getDecodedBody() ['paging'] ) );
+					}
+				}
+			} catch(  Facebook\Exceptions\FacebookResponseException $objException) {
+				display( $objException );
+				echo 'The graph returned with error: ' . $objException->getMessage();
+				exit;
+			} catch( Facebook\Exceptions\FacebookSDKException $objException ) {
+				display( $objException );
 				echo 'The SDK returned with error: ' . $objException->getMessage();
 				exit;
 			}
@@ -144,9 +183,11 @@
 				$this->m_objResponse = $this->fetchResponse( '/me?fields=id,name,picture.type(large)' );
 				$this->m_objUser = $this->m_objResponse->getGraphUser();
 			} catch(  Facebook\Exceptions\FacebookResponseException $objException) {
+				display( $objException );
 				echo 'The graph returned with error: ' . $objException->getMessage();
 				exit;
 			} catch( Facebook\Exceptions\FacebookSDKException $objException ) {
+				display( $objException );
 				echo 'The SDK returned with error: ' . $objException->getMessage();
 				exit;
 			}
@@ -156,9 +197,11 @@
 			try{
 				$this->m_objResponse = $this->fetchResponse( '/me/permissions/user_photos' );
 			} catch(  Facebook\Exceptions\FacebookResponseException $objException) {
+				display( $objException );
 				echo 'The graph returned with error: ' . $objException->getMessage();
 				exit;
 			} catch( Facebook\Exceptions\FacebookSDKException $objException ) {
+				display( $objException );
 				echo 'The SDK returned with error: ' . $objException->getMessage();
 				exit;
 			}
@@ -168,9 +211,11 @@
 			try{
 				$this->m_objResponse = $this->postResponse( 'DELETE /me/permissions' );
 			} catch(  Facebook\Exceptions\FacebookResponseException $objException) {
+				display( $objException );
 				echo 'The graph returned with error: ' . $objException->getMessage();
 				exit;
 			} catch( Facebook\Exceptions\FacebookSDKException $objException ) {
+				display( $objException );
 				echo 'The SDK returned with error: ' . $objException->getMessage();
 				exit;
 			}
@@ -188,9 +233,11 @@
 				$this->m_strAccessToken = $this->m_objHelper->getAccessToken();
 				$this->setAccessTokenToSession();
 			} catch(  Facebook\Exceptions\FacebookResponseException $objException) {
+				display( $objException );
 				echo 'The graph returned with error: ' . $objException->getMessage();
 				exit;
 			} catch( Facebook\Exceptions\FacebookSDKException $objException ) {
+				display( $objException );
 				echo 'The SDK returned with error: ' . $objException->getMessage();
 				exit;
 			}

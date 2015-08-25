@@ -1,11 +1,18 @@
 <?php
-	require_once( 'App/ZipArchive/pclzip.lib.php' );
+	require_once( __DIR__ . '/pclzip.lib.php' );
 
 	class CZipArchive {
 		protected $m_arrmixValidFiles;
 
 		function __construct() {
 			return true;
+		}
+
+		public function getImageExtension( $strImageUrl ) {
+			if( false == is_null( $strImageUrl ) ) {
+				$arrImageDiamensions = getimagesize( $strImageUrl );
+				return image_type_to_extension( $arrImageDiamensions[ 2 ] );
+			}
 		}
 
 		public function makeZipFile( $arrmixFiles, $strDestination, $boolIsOverwrite = false ) {
@@ -18,43 +25,38 @@
 					return false;
 				}
 
-				$this->m_arrmixValidFiles = array();
-
-				/*if( true == is_array( $arrmixFiles ) ) {
-					foreach( $arrmixFiles as $strOneFile ) {
-						if( true == $strOneFile ) {
-							$this->m_arrmixValidFiles[] = $strOneFile;
-						}
-					}
-				}*/
-
-				$this->m_arrmixValidFiles = $arrmixFiles;
-
-				if( 0 >= count( $this->m_arrmixValidFiles ) ) {
+				if( false == valArr( $arrmixFiles ) ) {
 					echo( 'no files found' );
-
 					return false;
 				}
 
 				$objZip = new PclZip( $strDestination );
-				/*if( true !== $objZip->create( $strDestination, $boolIsOverwrite ? ZipArchive::OVERWRITE : ZipArchive::CREATE ) ) {
-					echo( 'Zip cannot created' );
-					return false;
-				}*/
+				$this->m_arrmixValidFiles = array();
+				$objImageArray = array();
 
-				/*foreach( $this->m_arrmixValidFiles as $strOneFile ) {*/
-				$strFile = file_get_contents( $this->m_arrmixValidFiles['url'] );
-				$arrSize = getimagesize( $this->m_arrmixValidFiles['url'] );
+				foreach( $arrmixFiles as $intKey => $arrFile ) {
 
-				$objZip->create( array(
-				                      array(
-					                      PCLZIP_ATT_FILE_NAME    => $this->m_arrmixValidFiles['name'] . '.' . image_type_to_extension( $arrSize[2] ),
-					                      PCLZIP_ATT_FILE_CONTENT => $strFile,
-				                      )
-				                 ) );
-				$objZip->add( $strFile );
+					if( true == isset( $arrFile ) && valArr( $arrFile ) ) {
+						if( true == array_key_exists( 'image', $arrFile ) && true == array_key_exists( 'name', $arrFile ) ) {
+							$objImage = file_get_contents( $arrmixFiles[ $intKey ]['image'] );
+							$strName  = substr( $arrmixFiles[ $intKey ]['name'], 0, 15 );
 
-				/*}*/
+							if( '' == $strName || true == is_null( $strName ) ) {
+								$strName = rand( 9999, 999999 );
+							}
+
+							$objImageArray[] = array(
+								PCLZIP_ATT_FILE_NAME    => $strName . '.' . $this->getImageExtension( $arrmixFiles[ $intKey ][ 'image' ] ),
+								PCLZIP_ATT_FILE_CONTENT => $objImage,
+							);
+
+							$this->m_arrmixValidFiles[] = $objImage;
+						}
+					}
+				}
+
+				$objZip->create( $objImageArray );
+				$objZip->add( $this->m_arrmixValidFiles );
 
 				return file_exists( $strDestination );
 			} catch( Exception $objException ) {
@@ -62,7 +64,7 @@
 			}
 		}
 
-		public function makeZipFileFromAlbum( $arrmixFiles, $strDestination, $boolIsOverwrite = false ) {
+		public function makeZipFileFromAlbum( $arrmixFiles, $strDestination, $boolIsOverwrite = false, $arrAlbumDetails ) {
 
 			try {
 				//Check if file is exist already!!!
@@ -85,21 +87,18 @@
 						$arrSize  = getimagesize( $arrFile['image'] );
 						$strName  = substr( $arrFile['name'], 0, 15 );
 
-						$objArray[] = array(
+						if( '' == $strName || true == is_null( $strName ) ) {
+							$strName = rand( 9999, 999999 );
+						}
+
+						$objImageArray[] = array(
 							PCLZIP_ATT_FILE_NAME    => $strName . '.' . image_type_to_extension( $arrSize[2] ),
 							PCLZIP_ATT_FILE_CONTENT => $objImage,
 						);
 
-						/*$objZip->create( array(
-						                      array(
-							                      PCLZIP_ATT_FILE_NAME    => $strName . '.' . image_type_to_extension( $arrSize[2] ),
-							                      PCLZIP_ATT_FILE_CONTENT => $objImage,
-						                      )
-						                 ) );*/
-						//$objZip->add( $objImage );
 						$this->m_arrmixValidFiles[] = $objImage;
 					}
-					$objZip->create( $objArray );
+					$objZip->create( $objImageArray );
 					$objZip->add( $this->m_arrmixValidFiles );
 				}
 				return file_exists( $strDestination );

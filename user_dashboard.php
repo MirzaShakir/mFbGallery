@@ -13,7 +13,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<?php require_once( 'App/Includes/header_start.php' ); ?>
-	<title>mFbGallery : Home</title>
+	<title>mFbGallery : Dashboard</title>
 	<?php require_once( 'App/Includes/header_end.php' ); ?>
 </head>
 <body>
@@ -56,7 +56,7 @@
 			<li>
 				<a href="user_photos.php"><i class="fa fa-desktop"></i> mPhotos</a>
 			</li>
-			<li>
+			<li class="hide">
 				<a href="user_friends.php"><i class="fa fa-fw fa-file"></i> mFriends</a>
 			</li>
 		</ul>
@@ -73,7 +73,7 @@
 			</div>
 		</div>
 		<!-- /. ROW  -->
-		<footer><p>All right reserved. Template by: <a href="http://webthemez.com">WebThemez</a></p></footer>
+		<footer><p>Developed by: <a target="_blank" href="http://smarterer.com/baigmirzashakir"> MirzaShakir Baig</a></p></footer>
 	</div>
 	<!-- /. PAGE INNER  -->
 </div>
